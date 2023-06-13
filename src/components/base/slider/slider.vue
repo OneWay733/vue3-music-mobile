@@ -1,10 +1,20 @@
 <template>
-  <div class="slider">slider</div>
+  <div class="slider-wrapper" ref="sliderWrapperRef">
+    <ul class="content">
+      <li>...</li>
+      <li>...</li>
+    </ul>
+  </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from 'vue'
+import useSlider from '@/components/base/slider/use-slider'
+const sliderWrapperRef = ref(null)
+useSlider(sliderWrapperRef)
+</script>
 
 <style scoped lang="scss">
-.slider {
+.slider-wrapper {
 }
 </style>
