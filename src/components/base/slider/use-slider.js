@@ -6,6 +6,7 @@ BScroll.use(Slide)
 
 export default function useSlider(wrapperRef) {
   const slide = ref(null)
+  const currentPageIndex = ref(0)
   onMounted(() => {
     slide.value = new BScroll(wrapperRef.value, {
       click: true,
@@ -16,8 +17,13 @@ export default function useSlider(wrapperRef) {
       probeType: 2,
       slide: true
     })
+    slide.value.on('slideWillChange', (page) => (currentPageIndex.value = page.pageX))
   })
   onUnmounted(() => {
     slide.value.destroy()
   })
+  return {
+    slide,
+    currentPageIndex
+  }
 }

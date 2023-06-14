@@ -1,19 +1,30 @@
 <template>
-  <div>recommend</div>
+  <div class="recommend">
+    <div class="slider-wrapper">
+      <slider v-if="sliders.length" :sliders="sliders"></slider>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref } from 'vue'
 import { getRecommend } from '@/service/recommend'
+import Slider from '@/components/base/slider/slider.vue'
 
-onMounted(() => {
-  getRecommendList()
-})
-
+const sliders = ref([])
 async function getRecommendList() {
-  const result = await getRecommend()
-  console.log(result)
+  const { result } = await getRecommend()
+  sliders.value = result.sliders
 }
+getRecommendList()
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.recommend {
+  .slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+</style>
