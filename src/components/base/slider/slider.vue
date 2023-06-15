@@ -41,7 +41,7 @@ const { currentPageIndex } = useSlider(sliderWrapperRef)
   font-size: 0;
   touch-action: pan-y;
   .slider-group {
-    position: relative;
+    //position: relative;
     overflow: hidden;
     white-space: nowrap;
     .slider-page {

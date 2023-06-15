@@ -23,7 +23,6 @@ export default function useSlider(wrapperRef) {
     slide.value.destroy()
   })
   return {
-    slide,
     currentPageIndex
   }
 }
