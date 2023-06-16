@@ -6,7 +6,7 @@
 
 <script setup>
 import { getSingerList } from '@/service/singer'
-import IndexList from '@/components/base/index-list/index-list.vue'
+import IndexList from '@/components/index-list/index-list.vue'
 import { computed, ref } from 'vue'
 
 const loadingText = ref('等待加载 ...')
