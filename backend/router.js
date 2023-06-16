@@ -199,15 +199,13 @@ function registerRecommend(app) {
           albums.push(albumItem)
         }
         // 往前端发送一个标准格式的响应数据，包括成功错误码和数据
-        setTimeout(() => {
-          res.json({
-            code: ERR_OK,
-            result: {
-              sliders,
-              albums
-            }
-          })
-        }, 2000)
+        res.json({
+          code: ERR_OK,
+          result: {
+            sliders,
+            albums
+          }
+        })
       } else {
         res.json(data)
       }

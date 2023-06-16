@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <m-header />
-    <tab />
-    <router-view />
-  </div>
+  <m-header />
+  <tab />
+  <router-view />
 </template>
 
 <script setup>
