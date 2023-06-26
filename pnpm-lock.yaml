@@ -20,6 +20,9 @@ dependencies:
   express:
     specifier: ^4.18.2
     version: registry.npmmirror.com/express@4.18.2
+  good-storage:
+    specifier: ^1.1.1
+    version: registry.npmmirror.com/good-storage@1.1.1
   pinia:
     specifier: ^2.0.36
     version: registry.npmmirror.com/pinia@2.0.36(vue@3.3.2)
@@ -1590,6 +1593,12 @@ packages:
     dependencies:
       type-fest: registry.npmmirror.com/type-fest@0.20.2
     dev: true
+
+  registry.npmmirror.com/good-storage@1.1.1:
+    resolution: {integrity: sha512-+0UEpRT03fJgEJoeTVVz41ISC5+jaQrDIWatQ4BoDQfOiBBsjNanymi9sAtLFdEAADQN0FYR8mGpeqxSCe8oXQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/good-storage/-/good-storage-1.1.1.tgz}
+    name: good-storage
+    version: 1.1.1
+    dev: false
 
   registry.npmmirror.com/grapheme-splitter@1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz}

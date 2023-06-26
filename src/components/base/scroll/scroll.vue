@@ -8,12 +8,23 @@
 import useScroll from '@/components/base/scroll/use-scroll'
 import { ref } from 'vue'
 
-const rootRef = ref(null)
-useScroll(rootRef, {
-  click: true,
-  probeType: 2,
-  scrollY: true
+const props = defineProps({
+  click: {
+    type: Boolean,
+    default: true
+  },
+  probeType: {
+    type: Number,
+    default: 0
+  }
 })
+
+const emit = defineEmits(['onScroll'])
+
+const rootRef = ref(null)
+const scroll = useScroll(rootRef, props, emit)
+
+defineExpose({ scroll })
 </script>
 
 <style scoped lang="scss"></style>
