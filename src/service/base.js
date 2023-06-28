@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const BASEURL = 'http://192.168.0.108:9001'
+// const BASEURL = 'http://192.168.28.108:9001'
+const BASEURL = 'http://192.168.28.199:9001'
 const OK_CODE = 0
 
 axios.defaults.baseURL = BASEURL
