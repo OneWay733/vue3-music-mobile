@@ -85,7 +85,7 @@ function next() {
 function loop() {
   const audioEl = audioRef.value
   console.dir(audioEl.currentTime)
-  // audioEl.currentTime = 0
+  audioEl.currentTime = 0
 }
 
 // 播放歌曲
