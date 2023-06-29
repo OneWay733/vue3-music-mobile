@@ -14,7 +14,7 @@
       <div class="bottom">
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i @click="changeMode" :class="modeIcon"></i>
           </div>
           <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev"></i>
@@ -26,7 +26,7 @@
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+            <i @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
           </div>
         </div>
       </div>
@@ -39,13 +39,21 @@
 import { usePlaylistStore } from '@/stores/playlistStore'
 import usePlaySong from '@/components/player/use-play-song'
 import { toRefs } from 'vue'
+import useMode from '@/components/player/use-mode'
+import useFavorite from '@/components/player/use-favorite'
 
 const playlistStore = usePlaylistStore()
 const { currentSong, fullScreen } = toRefs(playlistStore)
 
 //播放功能
 const { playIcon, disableCls, togglePlay, pause, audioRef, prev, next, ready, error } =
-  usePlaySong(playlistStore)
+  usePlaySong()
+
+//播放模式切换
+const { modeIcon, changeMode } = useMode()
+
+//收藏歌曲
+const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
 //返回按钮
 function goBack() {

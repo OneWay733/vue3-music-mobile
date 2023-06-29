@@ -1,6 +1,8 @@
 import { computed, ref, toRefs, watch, watchEffect } from 'vue'
+import { usePlaylistStore } from '@/stores/playlistStore'
 
-export default function usePlaySong(store) {
+export default function usePlaySong() {
+  const store = usePlaylistStore()
   const { currentSong, currentIndex, playlist, playing } = toRefs(store)
   const songReady = ref(false)
   const audioRef = ref(null)
@@ -74,10 +76,10 @@ export default function usePlaySong(store) {
   return {
     playIcon,
     disableCls,
-    togglePlay,
-    pause,
     audioRef,
     songReady,
+    togglePlay,
+    pause,
     next,
     prev,
     ready,

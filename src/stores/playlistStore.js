@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { PLAY_MODE } from '@/assets/js/constant'
+import { FAVORITE_KEY, PLAY_MODE } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/utils'
+import { load } from '@/assets/js/array-store'
 
 export const usePlaylistStore = defineStore('playlistStore', {
   state: () => {
@@ -10,7 +11,8 @@ export const usePlaylistStore = defineStore('playlistStore', {
       playing: false,
       playMode: PLAY_MODE.sequence,
       currentIndex: 0,
-      fullScreen: false
+      fullScreen: false,
+      favoriteList: load(FAVORITE_KEY)
     }
   },
   getters: {
@@ -37,6 +39,9 @@ export const usePlaylistStore = defineStore('playlistStore', {
     setFullScreen(fullScreen) {
       this.fullScreen = fullScreen
     },
+    setFavoriteList(list) {
+      this.favoriteList = list
+    },
     selectPlay(list, index) {
       this.setPlayMode(PLAY_MODE.sequence)
       this.setSequenceList(list)
@@ -52,6 +57,17 @@ export const usePlaylistStore = defineStore('playlistStore', {
       this.setFullScreen(true)
       this.setPlayingList(shuffle(list))
       this.setCurrentIndex(0)
+    },
+    changeMode(mode) {
+      const id = this.currentSong.id
+      this.setPlayMode(mode)
+      if (mode === PLAY_MODE.random) {
+        this.setPlayingList(shuffle(this.sequenceList))
+      } else {
+        this.setPlayingList(this.sequenceList)
+      }
+      const index = this.playlist.findIndex((song) => song.id === id)
+      this.setCurrentIndex(index)
     }
   }
 })
