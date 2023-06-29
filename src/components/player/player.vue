@@ -16,13 +16,13 @@
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev"></i>
           </div>
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disableCls">
             <i @click="togglePlay" :class="playIcon"></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disableCls">
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
@@ -31,71 +31,21 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause"></audio>
+    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 
 <script setup>
 import { usePlaylistStore } from '@/stores/playlistStore'
-import { computed, ref, toRefs, watch, watchEffect } from 'vue'
+import usePlaySong from '@/components/player/use-play-song'
+import { toRefs } from 'vue'
 
 const playlistStore = usePlaylistStore()
-const { currentSong, fullScreen, playing, currentIndex, playlist } = toRefs(playlistStore)
-//播放状态
-const playIcon = computed(() => {
-  return playing.value ? 'icon-pause' : 'icon-play'
-})
-function togglePlay() {
-  playlistStore.setPlayingState(!playing.value)
-}
-function pause() {
-  playlistStore.setPlayingState(false)
-}
-watch(playing, (newPlaying) => {
-  const audioEl = audioRef.value
-  newPlaying ? audioEl.play() : audioEl.pause()
-})
+const { currentSong, fullScreen } = toRefs(playlistStore)
 
-//切换歌曲
-function prev() {
-  let currentIndexVal = currentIndex.value
-  const list = playlist.value
-  if (!list.length) return
-  if (list.length === 1) {
-    loop()
-  } else {
-    currentIndexVal = currentIndexVal ? currentIndexVal - 1 : list.length - 1
-    playlistStore.setCurrentIndex(currentIndexVal)
-    playlistStore.setPlayingState(true)
-  }
-}
-function next() {
-  let currentIndexVal = currentIndex.value
-  const list = playlist.value
-  if (!list.length) return
-  if (list.length === 1) {
-    loop()
-  } else {
-    currentIndexVal = currentIndexVal === list - 1 ? 0 : currentIndexVal + 1
-    playlistStore.setCurrentIndex(currentIndexVal)
-    playlistStore.setPlayingState(true)
-  }
-}
-
-function loop() {
-  const audioEl = audioRef.value
-  console.dir(audioEl.currentTime)
-  audioEl.currentTime = 0
-}
-
-// 播放歌曲
-const audioRef = ref(null)
-watchEffect(() => {
-  const audioEl = audioRef.value
-  if (!currentSong.value.id || !currentSong.value.url) return
-  audioEl.src = currentSong.value.url
-  audioEl.play()
-})
+//播放功能
+const { playIcon, disableCls, togglePlay, pause, audioRef, prev, next, ready, error } =
+  usePlaySong(playlistStore)
 
 //返回按钮
 function goBack() {
