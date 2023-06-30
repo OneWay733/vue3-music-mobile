@@ -60,7 +60,6 @@ export const usePlaylistStore = defineStore('playlistStore', {
     },
     changeMode(mode) {
       const id = this.currentSong.id
-      this.setPlayMode(mode)
       if (mode === PLAY_MODE.random) {
         this.setPlayingList(shuffle(this.sequenceList))
       } else {
@@ -68,6 +67,7 @@ export const usePlaylistStore = defineStore('playlistStore', {
       }
       const index = this.playlist.findIndex((song) => song.id === id)
       this.setCurrentIndex(index)
+      this.setPlayMode(mode)
     }
   }
 })

@@ -12,6 +12,18 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ parseTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changed="onProgressChanged"
+              @progress-changing="onProgressChanging"
+            ></progress-bar>
+          </div>
+          <span class="time time-r">{{ parseTime(currentSong.duration) }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i @click="changeMode" :class="modeIcon"></i>
@@ -31,7 +43,14 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
+    <audio
+      ref="audioRef"
+      @pause="pause"
+      @canplay="ready"
+      @error="error"
+      @timeupdate="updateTime"
+      @ended="onEnd"
+    ></audio>
   </div>
 </template>
 
@@ -41,19 +60,39 @@ import usePlaySong from '@/components/player/use-play-song'
 import { toRefs } from 'vue'
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
+import ProgressBar from '@/components/player/progress-bar.vue'
+import useProgress from '@/components/player/use-progress'
+import { parseTime } from '@/assets/js/utils'
 
 const playlistStore = usePlaylistStore()
 const { currentSong, fullScreen } = toRefs(playlistStore)
 
 //播放功能
-const { playIcon, disableCls, togglePlay, pause, audioRef, prev, next, ready, error } =
-  usePlaySong()
+const {
+  playIcon,
+  disableCls,
+  togglePlay,
+  pause,
+  audioRef,
+  prev,
+  next,
+  ready,
+  error,
+  updateTime,
+  currentTime,
+  onEnd,
+  onProgressChanged,
+  onProgressChanging
+} = usePlaySong()
 
 //播放模式切换
 const { modeIcon, changeMode } = useMode()
 
 //收藏歌曲
 const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
+//进度条
+const { progress } = useProgress(currentTime)
 
 //返回按钮
 function goBack() {
@@ -118,6 +157,29 @@ function goBack() {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .progress-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        margin: 0px auto;
+        padding: 10px 0;
+        .time {
+          color: $color-text;
+          font-size: $font-size-small;
+          flex: 0 0 40px;
+          line-height: 30px;
+          width: 40px;
+          &.time-l {
+            text-align: left;
+          }
+          &.time-r {
+            text-align: right;
+          }
+        }
+        .progress-bar-wrapper {
+          flex: 1;
+        }
+      }
       .operators {
         display: flex;
         align-items: center;

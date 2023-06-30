@@ -1,11 +1,14 @@
 import { computed, ref, toRefs, watch, watchEffect } from 'vue'
 import { usePlaylistStore } from '@/stores/playlistStore'
+import { PLAY_MODE } from '@/assets/js/constant'
 
 export default function usePlaySong() {
   const store = usePlaylistStore()
-  const { currentSong, currentIndex, playlist, playing } = toRefs(store)
+  const { currentSong, currentIndex, playlist, playing, playMode } = toRefs(store)
   const songReady = ref(false)
   const audioRef = ref(null)
+  const currentTime = ref(0)
+  let progressChanging = false
 
   const playIcon = computed(() => {
     return playing.value ? 'icon-pause' : 'icon-play'
@@ -62,6 +65,8 @@ export default function usePlaySong() {
   function loop() {
     const audioEl = audioRef.value
     audioEl.currentTime = 0
+    audioEl.play()
+    store.setPlayingState(true)
   }
 
   //解决切换歌曲太快导致的bug
@@ -72,17 +77,46 @@ export default function usePlaySong() {
   function error() {
     songReady.value = true
   }
+  function updateTime(e) {
+    if (progressChanging) return
+    currentTime.value = e.target.currentTime
+  }
+
+  function onEnd() {
+    if (playMode.value === PLAY_MODE.loop) {
+      loop()
+    } else {
+      next()
+    }
+  }
+
+  function onProgressChanging(progress) {
+    currentTime.value = currentSong.value.duration * progress
+    progressChanging = true
+  }
+  function onProgressChanged(progress) {
+    audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+    progressChanging = false
+    if (!playing.value) {
+      store.setPlayingState(true)
+    }
+  }
 
   return {
     playIcon,
     disableCls,
     audioRef,
     songReady,
+    currentTime,
     togglePlay,
     pause,
     next,
     prev,
     ready,
-    error
+    error,
+    updateTime,
+    onEnd,
+    onProgressChanged,
+    onProgressChanging
   }
 }
