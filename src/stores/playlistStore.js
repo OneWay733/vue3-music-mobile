@@ -68,6 +68,14 @@ export const usePlaylistStore = defineStore('playlistStore', {
       const index = this.playlist.findIndex((song) => song.id === id)
       this.setCurrentIndex(index)
       this.setPlayMode(mode)
+    },
+    addSongLyric(song, lyric) {
+      this.sequenceList.map((item) => {
+        if (item.id === song.id) {
+          item.lyric = lyric
+        }
+        return item
+      })
     }
   }
 })

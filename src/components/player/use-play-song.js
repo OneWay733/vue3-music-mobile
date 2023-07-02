@@ -17,11 +17,11 @@ export default function usePlaySong() {
     return songReady.value ? '' : 'disable'
   })
 
-  watchEffect(() => {
-    const audioEl = audioRef.value
-    if (!currentSong.value.id || !currentSong.value.url) return
+  watch(currentSong, (newSong) => {
+    if (!newSong.id || !newSong.url) return
     songReady.value = false
-    audioEl.src = currentSong.value.url
+    const audioEl = audioRef.value
+    audioEl.src = newSong.url
     audioEl.play()
   })
   watch(playing, (newPlaying) => {

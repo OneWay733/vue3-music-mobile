@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 dependencies:
   '@better-scroll/core':
@@ -19,6 +23,9 @@ dependencies:
   good-storage:
     specifier: ^1.1.1
     version: registry.npmmirror.com/good-storage@1.1.1
+  lyric-parser:
+    specifier: ^1.0.1
+    version: registry.npmmirror.com/lyric-parser@1.0.1
   pinia:
     specifier: ^2.0.36
     version: registry.npmmirror.com/pinia@2.0.36(vue@3.3.2)
@@ -1857,6 +1864,12 @@ packages:
       yallist: registry.npmmirror.com/yallist@4.0.0
     dev: true
 
+  registry.npmmirror.com/lyric-parser@1.0.1:
+    resolution: {integrity: sha512-klGkA3gsKMyHENefKj1OnbscWRAxvxNsYNuxgmSIQg6KqVx/HnTrfcD/gNP74XBcu7HSh+kGhCjetPlH91OtFA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/lyric-parser/-/lyric-parser-1.0.1.tgz}
+    name: lyric-parser
+    version: 1.0.1
+    dev: false
+
   registry.npmmirror.com/magic-string@0.30.0:
     resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/magic-string/-/magic-string-0.30.0.tgz}
     name: magic-string
@@ -2864,7 +2877,3 @@ packages:
     version: 0.1.0
     engines: {node: '>=10'}
     dev: true
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
