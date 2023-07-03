@@ -20,6 +20,24 @@
             </div>
           </div>
         </div>
+
+        <scroll class="middle-r" ref="lyricScrollRef">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p
+                class="text"
+                :class="{ current: currentLineNum === index }"
+                v-for="(line, index) in currentLyric.lines"
+                :key="line.num"
+              >
+                {{ line.txt }}
+              </p>
+            </div>
+            <div class="pure-music">
+              <p></p>
+            </div>
+          </div>
+        </scroll>
       </div>
 
       <div class="bottom">
@@ -67,8 +85,7 @@
 
 <script setup>
 import { usePlaylistStore } from '@/stores/playlistStore'
-import usePlaySong from '@/components/player/use-play-song'
-import { toRefs } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
 import ProgressBar from '@/components/player/progress-bar.vue'
@@ -76,46 +93,143 @@ import useProgress from '@/components/player/use-progress'
 import { parseTime } from '@/assets/js/utils'
 import useCd from '@/components/player/use-cd'
 import useLyric from '@/components/player/use-lyric'
+import Scroll from '@/components/base/scroll/scroll.vue'
+import { PLAY_MODE } from '@/assets/js/constant'
 
-const playlistStore = usePlaylistStore()
-const { currentSong, fullScreen } = toRefs(playlistStore)
+const store = usePlaylistStore()
+const { currentSong, fullScreen, playMode, currentIndex, playlist, playing } = toRefs(store)
 
-//播放功能
-const {
-  playIcon,
-  disableCls,
-  togglePlay,
-  pause,
-  audioRef,
-  prev,
-  next,
-  ready,
-  error,
-  updateTime,
-  currentTime,
-  onEnd,
-  onProgressChanged,
-  onProgressChanging
-} = usePlaySong()
+const songReady = ref(false)
+const audioRef = ref(null)
+const currentTime = ref(0)
+let progressChanging = false
 
 //播放模式切换
 const { modeIcon, changeMode } = useMode()
-
 //收藏歌曲
 const { getFavoriteIcon, toggleFavorite } = useFavorite()
-
 //进度条
-const { progress } = useProgress(currentTime)
-
+const { progress } = useProgress({ currentTime, songReady })
 // 旋转cd
 const { cdCls, cdRef, cdImageRef } = useCd()
-
 //歌词
-useLyric()
+const { currentLyric, currentLineNum, lyricListRef, lyricScrollRef, playLyric, stopLyric } =
+  useLyric({
+    songReady,
+    currentTime
+  })
+
+const playIcon = computed(() => {
+  return playing.value ? 'icon-pause' : 'icon-play'
+})
+const disableCls = computed(() => {
+  return songReady.value ? '' : 'disable'
+})
+
+watch(currentSong, (newSong) => {
+  if (!newSong.id || !newSong.url) return
+  songReady.value = false
+  const audioEl = audioRef.value
+  audioEl.src = newSong.url
+  audioEl.play()
+})
+
+watch(playing, (newPlaying) => {
+  if (!songReady.value) return
+  const audioEl = audioRef.value
+  if (newPlaying) {
+    audioEl.play()
+    playLyric()
+  } else {
+    audioEl.pause()
+    stopLyric()
+  }
+})
+
+function togglePlay() {
+  if (!songReady.value) return
+  store.setPlayingState(!playing.value)
+}
+function pause() {
+  store.setPlayingState(false)
+}
+
+function prev() {
+  let currentIndexVal = currentIndex.value
+  const list = playlist.value
+  if (!list.length || !songReady.value) return
+  if (list.length === 1) {
+    loop()
+  } else {
+    currentIndexVal = currentIndexVal ? currentIndexVal - 1 : list.length - 1
+    store.setCurrentIndex(currentIndexVal)
+    store.setPlayingState(true)
+  }
+}
+function next() {
+  let currentIndexVal = currentIndex.value
+  const list = playlist.value
+  if (!list.length || !songReady.value) return
+  if (list.length === 1) {
+    loop()
+  } else {
+    currentIndexVal = currentIndexVal === list.length - 1 ? 0 : currentIndexVal + 1
+    store.setCurrentIndex(currentIndexVal)
+    store.setPlayingState(true)
+  }
+}
+
+function loop() {
+  const audioEl = audioRef.value
+  audioEl.currentTime = 0
+  audioEl.play()
+  store.setPlayingState(true)
+}
+//解决切换歌曲太快导致的bug
+function ready() {
+  if (songReady.value) return
+  // songReady.value = true
+  // playLyric()
+  setTimeout(() => {
+    songReady.value = true
+    playLyric()
+  }, 3000)
+}
+function error() {
+  songReady.value = true
+}
+function updateTime(e) {
+  if (!progressChanging && songReady.value) {
+    currentTime.value = e.target.currentTime
+  }
+}
+
+function onEnd() {
+  if (playMode.value === PLAY_MODE.loop) {
+    loop()
+  } else {
+    next()
+  }
+}
+
+function onProgressChanging(progress) {
+  progressChanging = true
+  currentTime.value = currentSong.value.duration * progress
+  playLyric()
+  stopLyric()
+}
+function onProgressChanged(progress) {
+  audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+  progressChanging = false
+  if (!playing.value) {
+    store.setPlayingState(true)
+  }
+  playLyric()
+}
 
 //返回按钮
 function goBack() {
-  playlistStore.setFullScreen(false)
+  store.setFullScreen(false)
 }
 </script>
 
@@ -181,6 +295,7 @@ function goBack() {
       font-size: 0;
       .middle-l {
         display: inline-block;
+        display: none;
         vertical-align: top;
         position: relative;
         width: 100%;
