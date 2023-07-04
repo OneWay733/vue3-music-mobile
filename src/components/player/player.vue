@@ -12,16 +12,24 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
 
-      <div class="middle">
-        <div class="middle-l">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleLStyle">
           <div ref="cdWrapperRef" class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img ref="cdImageRef" :class="cdCls" :src="currentSong.pic" />
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
+          </div>
         </div>
 
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -33,14 +41,18 @@
                 {{ line.txt }}
               </p>
             </div>
-            <div class="pure-music">
-              <p></p>
+            <div class="pure-music" v-show="pureMusicLyric">
+              <p>{{ pureMusicLyric }}</p>
             </div>
           </div>
         </scroll>
       </div>
 
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ parseTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
@@ -95,6 +107,7 @@ import useCd from '@/components/player/use-cd'
 import useLyric from '@/components/player/use-lyric'
 import Scroll from '@/components/base/scroll/scroll.vue'
 import { PLAY_MODE } from '@/assets/js/constant'
+import UseMiddleInteractive from '@/components/player/use-middle-interactive'
 
 const store = usePlaylistStore()
 const { currentSong, fullScreen, playMode, currentIndex, playlist, playing } = toRefs(store)
@@ -113,11 +126,28 @@ const { progress } = useProgress({ currentTime, songReady })
 // 旋转cd
 const { cdCls, cdRef, cdImageRef } = useCd()
 //歌词
-const { currentLyric, currentLineNum, lyricListRef, lyricScrollRef, playLyric, stopLyric } =
-  useLyric({
-    songReady,
-    currentTime
-  })
+const {
+  currentLyric,
+  pureMusicLyric,
+  playingLyric,
+  currentLineNum,
+  lyricListRef,
+  lyricScrollRef,
+  playLyric,
+  stopLyric
+} = useLyric({
+  songReady,
+  currentTime
+})
+//中间切换层
+const {
+  currentShow,
+  middleRStyle,
+  middleLStyle,
+  onMiddleTouchStart,
+  onMiddleTouchMove,
+  onMiddleTouchEnd
+} = UseMiddleInteractive()
 
 const playIcon = computed(() => {
   return playing.value ? 'icon-pause' : 'icon-play'
@@ -188,12 +218,8 @@ function loop() {
 //解决切换歌曲太快导致的bug
 function ready() {
   if (songReady.value) return
-  // songReady.value = true
-  // playLyric()
-  setTimeout(() => {
-    songReady.value = true
-    playLyric()
-  }, 3000)
+  songReady.value = true
+  playLyric()
 }
 function error() {
   songReady.value = true
@@ -295,7 +321,7 @@ function goBack() {
       font-size: 0;
       .middle-l {
         display: inline-block;
-        display: none;
+        //display: none;
         vertical-align: top;
         position: relative;
         width: 100%;
@@ -327,7 +353,7 @@ function goBack() {
             }
           }
         }
-        /*.playing-lyric-wrapper {
+        .playing-lyric-wrapper {
           width: 80%;
           margin: 30px auto 0 auto;
           overflow: hidden;
@@ -338,7 +364,7 @@ function goBack() {
             font-size: $font-size-medium;
             color: $color-text-l;
           }
-        }*/
+        }
       }
       .middle-r {
         display: inline-block;
@@ -372,6 +398,24 @@ function goBack() {
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .dot-wrapper {
+        text-align: center;
+        font-size: 0;
+        .dot {
+          display: inline-block;
+          vertical-align: middle;
+          margin: 0 4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: $color-text-l;
+          &.active {
+            width: 20px;
+            border-radius: 5px;
+            background: $color-text-ll;
+          }
+        }
+      }
       .progress-wrapper {
         display: flex;
         align-items: center;

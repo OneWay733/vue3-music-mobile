@@ -8,6 +8,8 @@ export default function useLyric({ songReady, currentTime }) {
   const { currentSong } = toRefs(store)
 
   const currentLyric = ref(null)
+  const pureMusicLyric = ref('')
+  const playingLyric = ref('')
   const currentLineNum = ref(null)
   const lyricScrollRef = ref(null)
   const lyricListRef = ref(null)
@@ -17,13 +19,20 @@ export default function useLyric({ songReady, currentTime }) {
     stopLyric()
     currentLyric.value = null
     currentLineNum.value = 0
+    pureMusicLyric.value = ''
+    playingLyric.value = ''
     const lyric = await getLyric(newSong)
     store.addSongLyric(newSong, lyric)
     // 切换歌曲比较快，解决歌词重复发送请求
     if (newSong.lyric !== lyric) return
     currentLyric.value = new Lyric(lyric, handleLyric)
-    if (songReady.value) {
-      playLyric()
+    const hasLyric = currentLyric.value.lines.length
+    if (hasLyric) {
+      if (songReady.value) {
+        playLyric()
+      }
+    } else {
+      playingLyric.value = pureMusicLyric.value = lyric.replace(/\[(\d{2}):(\d{2}):(\d{2})\]/g, '')
     }
   })
 
@@ -41,8 +50,9 @@ export default function useLyric({ songReady, currentTime }) {
     }
   }
 
-  function handleLyric({ lineNum }) {
+  function handleLyric({ lineNum, txt }) {
     currentLineNum.value = lineNum
+    playingLyric.value = txt
     const scrollComp = lyricScrollRef.value
     const listEl = lyricListRef.value
     if (!listEl) return
@@ -55,6 +65,8 @@ export default function useLyric({ songReady, currentTime }) {
   }
   return {
     currentLyric,
+    pureMusicLyric,
+    playingLyric,
     currentLineNum,
     lyricScrollRef,
     lyricListRef,
