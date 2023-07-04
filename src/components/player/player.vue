@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playlist.length">
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" alt="" />
@@ -11,7 +11,6 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
-
       <div
         class="middle"
         @touchstart.prevent="onMiddleTouchStart"
@@ -84,6 +83,7 @@
         </div>
       </div>
     </div>
+    <mini-player :progress="progress" :toggle-play="togglePlay" />
     <audio
       ref="audioRef"
       @pause="pause"
@@ -97,17 +97,18 @@
 
 <script setup>
 import { usePlaylistStore } from '@/stores/playlistStore'
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, ref, toRefs, watch } from 'vue'
+import ProgressBar from '@/components/player/progress-bar.vue'
+import Scroll from '@/components/base/scroll/scroll.vue'
+import MiniPlayer from '@/components/player/mini-player.vue'
+import useProgress from '@/components/player/use-progress'
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
-import ProgressBar from '@/components/player/progress-bar.vue'
-import useProgress from '@/components/player/use-progress'
-import { parseTime } from '@/assets/js/utils'
+import UseMiddleInteractive from '@/components/player/use-middle-interactive'
 import useCd from '@/components/player/use-cd'
 import useLyric from '@/components/player/use-lyric'
-import Scroll from '@/components/base/scroll/scroll.vue'
+import { parseTime } from '@/assets/js/utils'
 import { PLAY_MODE } from '@/assets/js/constant'
-import UseMiddleInteractive from '@/components/player/use-middle-interactive'
 
 const store = usePlaylistStore()
 const { currentSong, fullScreen, playMode, currentIndex, playlist, playing } = toRefs(store)
@@ -115,6 +116,7 @@ const { currentSong, fullScreen, playMode, currentIndex, playlist, playing } = t
 const songReady = ref(false)
 const audioRef = ref(null)
 const currentTime = ref(0)
+const barRef = ref(null)
 let progressChanging = false
 
 //播放模式切换
@@ -173,6 +175,13 @@ watch(playing, (newPlaying) => {
   } else {
     audioEl.pause()
     stopLyric()
+  }
+})
+
+watch(fullScreen, async (newFullScreen) => {
+  if (newFullScreen) {
+    await nextTick()
+    barRef.value.setOffset(progress.value)
   }
 })
 

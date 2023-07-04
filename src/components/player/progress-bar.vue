@@ -42,8 +42,7 @@ const btnStyle = computed(() => {
 watch(
   () => props.progress,
   (newProgress) => {
-    const barWidth = progressBarRef.value.clientWidth - progressBtnWidth
-    offset.value = barWidth * newProgress
+    setOffset(newProgress)
   }
 )
 
@@ -72,6 +71,14 @@ function onClick(e) {
   const progress = offsetWidth / barWidth
   emits('progress-changed', progress)
 }
+function setOffset(progress) {
+  const barWidth = progressBarRef.value.clientWidth - progressBtnWidth
+  offset.value = barWidth * progress
+}
+
+defineExpose({
+  setOffset
+})
 </script>
 
 <style scoped lang="scss">
