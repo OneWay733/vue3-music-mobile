@@ -28,6 +28,7 @@ import { usePlaylistStore } from '@/stores/playlistStore'
 import { computed, toRefs } from 'vue'
 import useCd from '@/components/player/use-cd'
 import ProgressCircle from '@/components/player/progress-circle.vue'
+import useMiniSlider from '@/components/player/use-mini-slider'
 
 const store = usePlaylistStore()
 const { fullScreen, currentSong, playing, playlist } = toRefs(store)
@@ -40,6 +41,8 @@ const props = defineProps({
   togglePlay: Function
 })
 const { cdCls, cdRef, cdImageRef } = useCd()
+const { sliderWrapperRef } = useMiniSlider()
+
 const miniPlayIcon = computed(() => (playing.value ? 'icon-pause-mini' : 'icon-play-mini'))
 
 function showNormalPlayer() {
