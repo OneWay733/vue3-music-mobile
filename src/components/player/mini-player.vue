@@ -19,19 +19,25 @@
           <i class="icon-mini" :class="miniPlayIcon" @click.stop="togglePlay"></i>
         </progress-circle>
       </div>
+      <div class="control" @click.stop="showPlaylist">
+        <i class="icon-playlist"></i>
+      </div>
+      <Playlist ref="playlistRef"></Playlist>
     </div>
   </transition>
 </template>
 
 <script setup>
 import { usePlaylistStore } from '@/stores/playlistStore'
-import { computed, toRefs } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import useCd from '@/components/player/use-cd'
 import ProgressCircle from '@/components/player/progress-circle.vue'
 import useMiniSlider from '@/components/player/use-mini-slider'
+import Playlist from '@/components/player/playlist.vue'
 
 const store = usePlaylistStore()
 const { fullScreen, currentSong, playing, playlist } = toRefs(store)
+const playlistRef = ref(null)
 
 const props = defineProps({
   progress: {
@@ -47,6 +53,10 @@ const miniPlayIcon = computed(() => (playing.value ? 'icon-pause-mini' : 'icon-p
 
 function showNormalPlayer() {
   store.setFullScreen(true)
+}
+
+function showPlaylist() {
+  playlistRef.value.visible = true
 }
 </script>
 
