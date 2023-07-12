@@ -36,7 +36,6 @@ export default function useMiniSlider() {
         slideVal.goToPage(currentIndex.value, 0, 0)
         slideVal.on('slidePageChanged', ({ pageX }) => {
           store.setCurrentIndex(pageX)
-          store.setPlayingState(true)
         })
       }
     })
@@ -45,6 +44,13 @@ export default function useMiniSlider() {
         slideVal.goToPage(newIndex, 0, 0)
       }
     })
+
+    /*watch(playlist, async () => {
+      if (slideVal && slideShow.value) {
+        await nextTick()
+        slideVal.refresh()
+      }
+    })*/
   })
 
   onUnmounted(() => {

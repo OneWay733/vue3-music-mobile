@@ -56,7 +56,7 @@ function showNormalPlayer() {
 }
 
 function showPlaylist() {
-  playlistRef.value.visible = true
+  playlistRef.value.show()
 }
 </script>
 

@@ -25,10 +25,10 @@ export const usePlaylistStore = defineStore('playlistStore', {
       this.playing = playing
     },
     setSequenceList(list) {
-      this.sequenceList = list
+      this.sequenceList = list.slice()
     },
     setPlayingList(list) {
-      this.playlist = list
+      this.playlist = list.slice()
     },
     setPlayMode(mode) {
       this.playMode = mode
@@ -40,7 +40,7 @@ export const usePlaylistStore = defineStore('playlistStore', {
       this.fullScreen = fullScreen
     },
     setFavoriteList(list) {
-      this.favoriteList = list
+      this.favoriteList = list.slice()
     },
     selectPlay(list, index) {
       this.setPlayMode(PLAY_MODE.sequence)
@@ -76,6 +76,25 @@ export const usePlaylistStore = defineStore('playlistStore', {
         }
         return item
       })
+    },
+    removeSong(song) {
+      const sequenceIndex = this.findIndex(this.sequenceList, song)
+      const playIndex = this.findIndex(this.playlist, song)
+      if (sequenceIndex < 0 || playIndex < 0) return
+      if (playIndex < this.currentIndex) {
+        this.currentIndex--
+      }
+      this.sequenceList.splice(sequenceIndex, 1)
+      this.playlist.splice(playIndex, 1)
+    },
+    clearSongList() {
+      this.setPlayingList([])
+      this.setSequenceList([])
+      this.setCurrentIndex(0)
+      this.setPlayingState(false)
+    },
+    findIndex(list, song) {
+      return list.findIndex((item) => item.id === song.id)
     }
   }
 })

@@ -170,10 +170,12 @@ const disableCls = computed(() => {
 
 watch(currentSong, (newSong) => {
   if (!newSong.id || !newSong.url) return
+  currentTime.value = 0
   songReady.value = false
   const audioEl = audioRef.value
   audioEl.src = newSong.url
   audioEl.play()
+  store.setPlayingState(true)
 })
 
 watch(playing, (newPlaying) => {
@@ -212,7 +214,6 @@ function prev() {
   } else {
     currentIndexVal = currentIndexVal ? currentIndexVal - 1 : list.length - 1
     store.setCurrentIndex(currentIndexVal)
-    store.setPlayingState(true)
   }
 }
 function next() {
@@ -224,7 +225,6 @@ function next() {
   } else {
     currentIndexVal = currentIndexVal === list.length - 1 ? 0 : currentIndexVal + 1
     store.setCurrentIndex(currentIndexVal)
-    store.setPlayingState(true)
   }
 }
 

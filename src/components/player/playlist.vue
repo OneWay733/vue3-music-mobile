@@ -31,16 +31,22 @@
               </li>
             </transition-group>
           </scroll>
-          <!--<div class="list-add">
+          <div class="list-add">
             <div class="add" @click="showAddSong">
               <i class="icon-add"></i>
               <span class="text">添加歌曲到队列</span>
             </div>
-          </div>-->
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
         </div>
+        <confirm
+          ref="confirmRef"
+          @confirm="confirmClear"
+          text="是否清空播放列表？"
+          confirm-btn-text="清空"
+        ></confirm>
       </div>
     </transition>
   </teleport>
@@ -49,17 +55,27 @@
 <script setup>
 import useMode from '@/components/player/use-mode'
 import useFavorite from '@/components/player/use-favorite'
-import { ref, toRefs } from 'vue'
+import { nextTick, ref, toRefs, watch } from 'vue'
 import { usePlaylistStore } from '@/stores/playlistStore'
 import Scroll from '@/components/base/scroll/scroll.vue'
+import Confirm from '@/components/base/comfirm/confirm.vue'
 
 const store = usePlaylistStore()
 const { playlist, sequenceList, currentSong } = toRefs(store)
-
+const scrollRef = ref(null)
+const listRef = ref(null)
+const confirmRef = ref(null)
 const visible = ref(false)
+const removing = ref(false)
 
 const { modeIcon, modeText, changeMode } = useMode()
 const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
+watch(currentSong, async (newSong) => {
+  if (!visible.value || !newSong.id) return
+  await nextTick()
+  scrollToCurrent()
+})
 
 function getCurrentIcon(song) {
   if (song.id === currentSong.value.id) return 'icon-play'
@@ -71,12 +87,39 @@ function selectItem(song) {
   store.setPlayingState(true)
 }
 
+function removeSong(song) {
+  if (removing.value) return
+  removing.value = true
+  store.removeSong(song)
+  setTimeout(() => {
+    removing.value = false
+  }, 300)
+}
+
+function scrollToCurrent() {
+  const index = sequenceList.value.findIndex((item) => item.id === currentSong.value.id)
+  if (index === -1) return
+  const targetEl = listRef.value.$el.children[index]
+  scrollRef.value.scroll.scrollToElement(targetEl, 600)
+}
+function showConfirm() {
+  confirmRef.value.show()
+}
+function confirmClear() {
+  store.clearSongList()
+  hide()
+}
+async function show() {
+  visible.value = true
+  await nextTick()
+  scrollToCurrent()
+}
 function hide() {
   visible.value = false
 }
 
 defineExpose({
-  visible
+  show
 })
 </script>
 
