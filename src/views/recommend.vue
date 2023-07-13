@@ -21,7 +21,7 @@ import { computed, ref } from 'vue'
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider.vue'
 import RecommendList from '@/components/recommend-list/recommend-list.vue'
-import Scroll from '@/components/base/scroll/scroll.vue'
+import Scroll from '@/components/wrap-scroll'
 
 const loadingText = ref('等待加载...')
 const loading = computed(() => {

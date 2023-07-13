@@ -86,6 +86,9 @@ export const usePlaylistStore = defineStore('playlistStore', {
       }
       this.sequenceList.splice(sequenceIndex, 1)
       this.playlist.splice(playIndex, 1)
+      if (!this.playlist.length) {
+        this.setPlayingState(false)
+      }
     },
     clearSongList() {
       this.setPlayingList([])

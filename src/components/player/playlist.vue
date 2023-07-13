@@ -91,6 +91,9 @@ function removeSong(song) {
   if (removing.value) return
   removing.value = true
   store.removeSong(song)
+  if (!playlist.value.length) {
+    hide()
+  }
   setTimeout(() => {
     removing.value = false
   }, 300)

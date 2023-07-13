@@ -15,6 +15,7 @@
     </div>
     <scroll
       class="list"
+      :style="scrollStyle"
       :probe-type="3"
       @scroll="onScroll"
       v-loading:[loadingText]="loading"
@@ -28,11 +29,14 @@
 </template>
 
 <script setup>
-import Scroll from '@/components/base/scroll/scroll.vue'
+import Scroll from '@/components/wrap-scroll'
 import SongList from '@/components/base/song-list/song-list.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePlaylistStore } from '@/stores/playlistStore'
+
+const store = usePlaylistStore()
+const { playlist } = toRefs(store)
 
 const props = defineProps({
   songs: {
@@ -43,6 +47,10 @@ const props = defineProps({
   pic: String,
   loading: Boolean
 })
+
+const bgImage = ref(null)
+const imageHeight = ref(0)
+const maxTranslateY = ref(0)
 
 const bgImageStyle = computed(() => {
   const scroll_Y = scrollY.value
@@ -98,9 +106,13 @@ const filterStyle = computed(() => {
   }
 })
 
-const bgImage = ref(null)
-const imageHeight = ref(0)
-const maxTranslateY = ref(0)
+const scrollStyle = computed(() => {
+  const bottom = playlist.value.length ? '60px' : 0
+  return {
+    top: `${imageHeight.value}px`,
+    bottom
+  }
+})
 function calculateImageHeight() {
   imageHeight.value = bgImage.value.clientHeight
   maxTranslateY.value = imageHeight.value - RESERVED_HEIGHT
