@@ -482,9 +482,8 @@ function registerAlbum(app) {
     }
 
     const sign = getSecuritySign(JSON.stringify(data))
-
     const url = `https://u.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
-
+    console.log(url)
     post(url, data).then((response) => {
       const data = response.data
       if (data.code === ERR_OK) {

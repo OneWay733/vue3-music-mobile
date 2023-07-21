@@ -9,10 +9,15 @@
         </div>
         <div class="recommend-list">
           <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
-          <recommend-list :albums="albums" />
+          <recommend-list :albums="albums" @selectAlbum="selectAlbum" />
         </div>
       </div>
     </scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :data="selectedAlbum" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -22,7 +27,11 @@ import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider.vue'
 import RecommendList from '@/components/recommend-list/recommend-list.vue'
 import Scroll from '@/components/wrap-scroll'
+import { ALBUM_KEY } from '@/assets/js/constant'
+import storage from 'good-storage'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const loadingText = ref('等待加载...')
 const loading = computed(() => {
   return !sliders.value.length && !albums.value.length
@@ -30,12 +39,22 @@ const loading = computed(() => {
 
 const sliders = ref([])
 const albums = ref([])
+const selectedAlbum = ref(null)
 async function getRecommendList() {
   const { result } = await getRecommend()
   sliders.value = result.sliders
   albums.value = result.albums
 }
 getRecommendList()
+
+function selectAlbum(album) {
+  selectedAlbum.value = album
+  cacheAlbum(album)
+  router.push(`/recommend/${album.id}`)
+}
+function cacheAlbum(album) {
+  storage.session.set(ALBUM_KEY, album)
+}
 </script>
 
 <style scoped lang="scss">

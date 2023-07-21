@@ -8,7 +8,14 @@ const routes = [
   {
     path: '/recommend',
     name: 'recommend',
-    component: () => import('@/views/recommend.vue')
+    component: () => import('@/views/recommend.vue'),
+    children: [
+      {
+        path: ':id',
+        name: 'album',
+        component: () => import('@/views/album.vue')
+      }
+    ]
   },
   {
     path: '/singer',

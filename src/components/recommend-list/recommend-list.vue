@@ -1,6 +1,6 @@
 <template>
   <ul class="recommend-list">
-    <li v-for="album in albums" :key="album.id" class="item">
+    <li v-for="album in albums" :key="album.id" class="item" @click="selectItem(album)">
       <div class="icon">
         <img width="60" height="60" v-lazy="album.pic" />
       </div>
@@ -23,6 +23,10 @@ defineProps({
     default: () => []
   }
 })
+const emit = defineEmits(['selectAlbum'])
+function selectItem(album) {
+  emit('selectAlbum', album)
+}
 </script>
 
 <style scoped lang="scss">
