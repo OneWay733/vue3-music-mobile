@@ -198,6 +198,7 @@ function registerRecommend(app) {
 
           albums.push(albumItem)
         }
+
         // 往前端发送一个标准格式的响应数据，包括成功错误码和数据
         res.json({
           code: ERR_OK,
@@ -359,6 +360,7 @@ function registerSingerDetail(app) {
 function registerSongsUrl(app) {
   app.get('/api/getSongsUrl', (req, res) => {
     const mid = req.query.mid
+
     let midGroup = []
     // 第三方接口只支持最多处理 100 条数据，所以如果超过 100 条数据，我们要把数据按每组 100 条切割，发送多个请求
     if (mid.length > 100) {
@@ -375,10 +377,10 @@ function registerSongsUrl(app) {
 
     // 处理返回的 mid
     function process(mid) {
-      let data = {
+      const data = {
         req_0: {
-          module: 'music.vkey.GetVkey',
-          method: 'UrlGetVkey',
+          module: 'vkey.GetVkeyServer',
+          method: 'CgiGetVkey',
           param: {
             guid: getUid(),
             songmid: mid,
@@ -391,15 +393,15 @@ function registerSongsUrl(app) {
         },
         comm: {
           g_tk: token,
-          uin: 0,
+          uin: '0',
           format: 'json',
           platform: 'h5'
         }
       }
 
       const sign = getSecuritySign(JSON.stringify(data))
-      const url = `https://u6.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
-      data = JSON.stringify(data)
+      const url = `https://u.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
+
       // 发送 post 请求
       return post(url, data).then((response) => {
         const data = response.data
@@ -482,8 +484,9 @@ function registerAlbum(app) {
     }
 
     const sign = getSecuritySign(JSON.stringify(data))
+
     const url = `https://u.y.qq.com/cgi-bin/musics.fcg?_=${getRandomVal()}&sign=${sign}`
-    console.log(url)
+
     post(url, data).then((response) => {
       const data = response.data
       if (data.code === ERR_OK) {
@@ -727,7 +730,7 @@ function registerSearch(app) {
           res.json(data)
         }
       })
-      .catch(() => {
+      .catch((e) => {
         res.status(500).send()
       })
   })
