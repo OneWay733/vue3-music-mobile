@@ -22,7 +22,7 @@
       v-no-result="noResults"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -45,7 +45,8 @@ const props = defineProps({
   },
   title: String,
   pic: String,
-  loading: Boolean
+  loading: Boolean,
+  rank: Boolean
 })
 
 const bgImage = ref(null)
