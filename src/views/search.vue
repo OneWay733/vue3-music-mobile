@@ -13,7 +13,7 @@
             </li>
           </ul>
         </div>
-        <!--<div class="search-history" v-show="searchHistory.length">
+        <div class="search-history" v-show="searchHistory.length">
           <h1 class="title">
             <span class="text">搜索历史</span>
             <span class="clear" @click="showConfirm">
@@ -27,12 +27,8 @@
             @confirm="clearSearch"
           >
           </confirm>
-          <search-list
-            :searches="searchHistory"
-            @select="addQuery"
-            @delete="deleteSearch"
-          ></search-list>
-        </div>-->
+          <search-list :searches="searchHistory" @select="addQuery" @delete="deleteSearch" />
+        </div>
       </div>
     </scroll>
   </div>
@@ -40,12 +36,21 @@
 
 <script setup>
 import SearchInput from '@/components/search/search-input.vue'
+import Confirm from '@/components/base/comfirm/confirm.vue'
+import SearchList from '@/components/base/search-list/search-list.vue'
 import Scroll from '@/components/wrap-scroll'
-import { ref } from 'vue'
+import { ref, toRefs } from 'vue'
 import { getHotKeys } from '@/service/search'
+import useSearchHistory from '@/components/search/use-search-history'
+import { usePlaylistStore } from '@/stores/playlistStore'
 
+const store = usePlaylistStore()
+const { searchHistory } = toRefs(store)
 const query = ref('')
 const hotKeys = ref([])
+const confirmRef = ref(null)
+
+const { saveSearch, clearSearch, deleteSearch } = useSearchHistory()
 async function getHotKeyList() {
   const { result } = await getHotKeys()
   hotKeys.value = result.hotKeys
@@ -54,6 +59,10 @@ getHotKeyList()
 
 function addQuery(keyword) {
   query.value = keyword.trim()
+}
+
+function showConfirm() {
+  confirmRef.value.show()
 }
 </script>
 

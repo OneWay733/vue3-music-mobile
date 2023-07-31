@@ -730,7 +730,7 @@ function registerSearch(app) {
           res.json(data)
         }
       })
-      .catch((e) => {
+      .catch(() => {
         res.status(500).send()
       })
   })

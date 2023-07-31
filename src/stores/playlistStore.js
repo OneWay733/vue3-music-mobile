@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { FAVORITE_KEY, PLAY_MODE } from '@/assets/js/constant'
+import { FAVORITE_KEY, PLAY_MODE, SEARCH_KEY } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/utils'
 import { load } from '@/assets/js/array-store'
 
@@ -12,7 +12,8 @@ export const usePlaylistStore = defineStore('playlistStore', {
       playMode: PLAY_MODE.sequence,
       currentIndex: 0,
       fullScreen: false,
-      favoriteList: load(FAVORITE_KEY)
+      favoriteList: load(FAVORITE_KEY),
+      searchHistory: load(SEARCH_KEY)
     }
   },
   getters: {
@@ -41,6 +42,9 @@ export const usePlaylistStore = defineStore('playlistStore', {
     },
     setFavoriteList(list) {
       this.favoriteList = list.slice()
+    },
+    setSearchHistory(searches) {
+      this.searchHistory = searches
     },
     selectPlay(list, index) {
       this.setPlayMode(PLAY_MODE.sequence)
