@@ -29,10 +29,10 @@ export default function createDetailComponent(key, fetch) {
         return ret
       },
       pic() {
-        return this.computedData && this.computedData.pic
+        return this.computedData?.pic
       },
       title() {
-        return this.computedData && this.computedData.name
+        return this.computedData?.name || this.computedData?.title
       }
     },
     async created() {

@@ -94,6 +94,7 @@ export const usePlaylistStore = defineStore('playlistStore', {
         this.setPlayingState(false)
       }
     },
+    addSong(song) {},
     clearSongList() {
       this.setPlayingList([])
       this.setSequenceList([])

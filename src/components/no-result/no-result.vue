@@ -2,7 +2,7 @@
   <div class="no-result">
     <div class="no-result-content">
       <div class="icon"></div>
-      <p class="text">{{ title }}</p>
+      <p class="text">{{ titleLabel }}</p>
     </div>
   </div>
 </template>
@@ -10,9 +10,9 @@
 <script setup>
 import { ref } from 'vue'
 
-const title = ref('抱歉，没有结果')
+const titleLabel = ref('抱歉，没有结果')
 function setTitle(title) {
-  title.value = title
+  titleLabel.value = title
 }
 defineExpose({
   setTitle

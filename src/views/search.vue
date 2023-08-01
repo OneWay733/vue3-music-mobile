@@ -31,11 +31,15 @@
         </div>
       </div>
     </scroll>
+    <div class="search-result" v-show="query">
+      <suggest :query="query" @select-singer="selectSinger" @select-song="selectSong"></suggest>
+    </div>
   </div>
 </template>
 
 <script setup>
 import SearchInput from '@/components/search/search-input.vue'
+import Suggest from '@/components/search/suggest.vue'
 import Confirm from '@/components/base/comfirm/confirm.vue'
 import SearchList from '@/components/base/search-list/search-list.vue'
 import Scroll from '@/components/wrap-scroll'
@@ -51,6 +55,7 @@ const hotKeys = ref([])
 const confirmRef = ref(null)
 
 const { saveSearch, clearSearch, deleteSearch } = useSearchHistory()
+
 async function getHotKeyList() {
   const { result } = await getHotKeys()
   hotKeys.value = result.hotKeys
@@ -63,6 +68,15 @@ function addQuery(keyword) {
 
 function showConfirm() {
   confirmRef.value.show()
+}
+function selectSinger(singer) {
+  saveSearch?.(query.value)
+  console.log('singer', singer)
+}
+function selectSong(song) {
+  saveSearch?.(query.value)
+  store.addSong(song)
+  console.log('song', song)
 }
 </script>
 
@@ -118,6 +132,10 @@ function showConfirm() {
         }
       }
     }
+  }
+  .search-result {
+    flex: 1;
+    overflow: hidden;
   }
 }
 </style>

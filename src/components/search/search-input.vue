@@ -49,6 +49,10 @@ function clear() {
   height: 32px;
   background: $color-highlight-background;
   border-radius: 6px;
+  .icon-search {
+    font-size: 24px;
+    color: hsla(0%, 0%, 100%, 0.3);
+  }
   .input-inner {
     flex: 1;
     margin: 0 5px;
@@ -57,6 +61,7 @@ function clear() {
     color: $color-text;
     font-size: $font-size-medium;
     outline: 0;
+    border: 0;
     &::placeholder {
       color: $color-text-d;
     }
